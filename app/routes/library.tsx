@@ -1,6 +1,6 @@
-import { json, redirect } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
-import { getSession } from "~/sessions"
+import { json, redirect } from '@remix-run/cloudflare'
+import { useLoaderData } from '@remix-run/react'
+import { getSession } from '~/sessions'
 
 export const loader = async () => {
 	const session = await getSession()
