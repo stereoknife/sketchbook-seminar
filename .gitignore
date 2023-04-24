@@ -6,6 +6,6 @@ node_modules
 /public/build
 .dev.vars
 
-.nova
-.vscode/
-.DS_Store
+/.nova
+/.vscode
+/.DS_Store
