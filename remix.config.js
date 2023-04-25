@@ -1,4 +1,6 @@
 /** @type {import('@remix-run/dev').AppConfig} */
+routes = require('./routes.js')
+
 module.exports = {
   devServerBroadcastDelay: 1000,
   ignoredRouteFiles: ["**/.*"],
@@ -19,4 +21,5 @@ module.exports = {
     v2_normalizeFormMethod: true,
     v2_routeConvention: true,
   },
+  routes,
 };
