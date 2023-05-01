@@ -1,2 +1,14 @@
+name = "sketchbook-seminar"
+main = "server.ts"
 compatibility_date = "2022-04-05"
 compatibility_flags = ["streams_enable_constructors"]
+
+[[d1_databases]]
+binding = "TEST"
+database_name = "test"
+database_id = "a"
+
+[[env.development.d1_databases]]
+binding = "TEST"
+database_name = "test"
+database_id = ""

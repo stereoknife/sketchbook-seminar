@@ -5,7 +5,10 @@ node_modules
 /functions/\[\[path\]\].js.map
 /public/build
 .dev.vars
+.wrangler
 
 /.nova
 /.vscode
 .DS_Store
+
+drizzle/

@@ -5,6 +5,7 @@ export const meta: V2_MetaFunction = () => {
 }
 
 export default function Index() {
+
   return (
     <div className='xl:container mx-auto text-center'>
       <h1 className='text-6xl font-black my-16'>Sketchbook Seminar</h1>
