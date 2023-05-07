@@ -1,8 +1,0 @@
-{
-  "index.ignored_file_patterns" : [
-    "node_modules"
-  ],
-  "workspace.preview_append_paths" : false,
-  "workspace.preview_type" : "custom",
-  "workspace.preview_url" : "http:\/\/127.0.0.1:8788\/"
-}
