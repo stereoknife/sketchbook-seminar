@@ -25,6 +25,6 @@
       "@/db/*": ["lib/database/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".eslintrc.js", ".storybook/**/*.ts", "next.config.js"],
+  "exclude": ["node_modules", "coverage/lcov-report/*.js"]
 }

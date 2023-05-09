@@ -3,6 +3,10 @@
 const config = {
   root: true,
   parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: './tsconfig.json',
+    ecmaVersion: 'latest',
+  },
   plugins: [
     '@typescript-eslint',
   ],
@@ -14,10 +18,18 @@ const config = {
     'next/core-web-vitals',
     'plugin:storybook/recommended',
   ],
-  ignorePatterns: ['node_modules/', '.next/', 'out/', 'build/'],
+  ignorePatterns: ['node_modules/', '.next/', 'out/', 'build/', 'coverage/'],
   rules: {
     'comma-dangle': ['error', 'always-multiline'],
+    '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],
     '@typescript-eslint/no-empty-interface': ['error', { allowSingleExtends: true }],
+    '@typescript-eslint/explicit-function-return-type': ['off'],
+    '@typescript-eslint/space-before-function-paren': ['off', {
+      anonymous: 'never',
+      named: 'never',
+      asyncArrow: 'always',
+    }],
+    '@typescript-eslint/triple-slash-reference': ['off'],
   },
 }
 

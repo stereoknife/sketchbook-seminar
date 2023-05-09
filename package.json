@@ -9,7 +9,7 @@
 	"dev:build": "next build --no-lint",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "storybook": "storybook dev -p 6006",
     "build:storybook": "storybook build",
     "test": "jest",
