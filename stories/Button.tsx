@@ -6,9 +6,14 @@ interface ButtonProps {
    */
   primary?: boolean;
   /**
-   * What background color to use
+   * What color to use
    */
-  backgroundColor?: string;
+  color?: string;
+  /**
+   * What color intensity to use
+   */
+  colorIntensity?: number;
+  text?: 'white' | 'black';
   /**
    * How large should the button be?
    */
@@ -29,23 +34,33 @@ interface ButtonProps {
 export const Button = ({
   primary = false,
   size = 'medium',
-  backgroundColor,
+  color = 'red',
+  colorIntensity = 500,
+  text = 'black',
   label,
   ...props
 }: ButtonProps) => {
-  const mode = primary ? 'storybook-button--primary' : 'storybook-button--secondary';
+  const getColor = (...args: string[]) => args.map((arg) => `${arg}-${color}-${colorIntensity}`).join(' ')
+  
+  const sizeClass
+    = size == 'small' ? 'px-4 py-1'
+    : size == 'medium' ? 'px-6 py-2'
+    : size == 'large' ? 'px-8 py-2 text-lg'
+    : ''
+  
+  const colorClass = primary
+    ? `${getColor('bg')} text-${text}`
+    : `border ${getColor('border', 'text')}`
+  
+  const common = `rounded-md ${sizeClass} ${colorClass}`
+  
   return (
     <button
       type="button"
-      className="bg-red-300"
+      className={common}
       {...props}
     >
       {label}
-      <style jsx>{`
-        button {
-          background-color: ${backgroundColor};
-        }
-      `}</style>
     </button>
   );
 };
