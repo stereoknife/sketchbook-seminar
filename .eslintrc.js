@@ -9,7 +9,8 @@ const config = {
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
-    'next/core-web-vitals'
+    'next/core-web-vitals',
+	'plugin:storybook/recommended'
   ],
   ignorePatterns: ['node_modules/', '.next/', 'out/', 'build/'],
   rules: {
