@@ -1,22 +1,24 @@
 /** @type {import('eslint').Linter.Config} */
+
 const config = {
   root: true,
   parser: '@typescript-eslint/parser',
   plugins: [
-    '@typescript-eslint'
+    '@typescript-eslint',
   ],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
-    'next/core-web-vitals'
+    'standard-with-typescript',
+    'next/core-web-vitals',
+    'plugin:storybook/recommended',
   ],
   ignorePatterns: ['node_modules/', '.next/', 'out/', 'build/'],
   rules: {
-    semi: ['error', 'never'],
-    quotes: ['error', 'single'],
-    '@typescript-eslint/no-empty-interface': ['error', {allowSingleExtends: true}]
-  }
+    'comma-dangle': ['error', 'always-multiline'],
+    '@typescript-eslint/no-empty-interface': ['error', { allowSingleExtends: true }],
+  },
 }
 
 module.exports = config
