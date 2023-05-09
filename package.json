@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npm run dev:all",
+    "dev:all": "concurrently \"npm run dev:next\" \"npm run storybook\"",
+    "dev:next": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@types/node": "20.1.0",
@@ -23,6 +27,17 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
-    "eslint-config-standard-with-typescript": "^34.0.1"
+    "@storybook/addon-essentials": "^7.0.9",
+    "@storybook/addon-interactions": "^7.0.9",
+    "@storybook/addon-links": "^7.0.9",
+    "@storybook/addon-styling": "^1.0.6",
+    "@storybook/blocks": "^7.0.9",
+    "@storybook/nextjs": "^7.0.9",
+    "@storybook/react": "^7.0.9",
+    "@storybook/testing-library": "^0.0.14-next.2",
+    "concurrently": "^8.0.1",
+    "eslint-config-standard-with-typescript": "^34.0.1",
+    "eslint-plugin-storybook": "^0.6.12",
+    "storybook": "^7.0.9"
   }
 }
