@@ -1,4 +1,5 @@
-module.exports = {
+/** @type {import('eslint').Linter.Config} */
+const config = {
   root: true,
   parser: '@typescript-eslint/parser',
   plugins: [
@@ -17,3 +18,5 @@ module.exports = {
     '@typescript-eslint/no-empty-interface': ['error', {allowSingleExtends: true}]
   }
 }
+
+module.exports = config
