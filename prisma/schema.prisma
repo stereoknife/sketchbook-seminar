@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id  Int @id @default(autoincrement())
+  username String @db.VarChar(255)
+  discord_id String @db.VarChar(64) @unique
+  entries SketchbookEntry[]
+}
+
+model Sketchbook {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(255)
+  theme String?
+  start DateTime @db.Timestamp(3)
+  end DateTime @db.Timestamp(3)
+  entries SketchbookEntry[]
+}
+
+enum EntryKind {
+  DigitalArt
+  TraditionalArt
+  Photo
+  Animation
+  Video
+}
+
+model SketchbookEntry {
+  id Int @id @default(autoincrement())
+  userId Int 
+  user User @relation(fields: [userId], references: [id])
+  sketchbook_id Int
+  sketchbook Sketchbook @relation(fields: [sketchbook_id], references: [id])
+  kind EntryKind
+  path String
+  name String? @db.VarChar(255)
+  description String?
+}
