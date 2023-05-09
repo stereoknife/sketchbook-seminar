@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "db:start": "docker run --rm --name sketchbook-dev-db -e POSTGRES_PASSWORD=password -p 5433:5432 -d postgres",
+    "db:stop": "docker stop sketchbook-dev-db"
   },
   "dependencies": {
     "@types/node": "20.1.0",
