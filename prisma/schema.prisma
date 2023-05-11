@@ -11,22 +11,35 @@ datasource db {
 }
 
 model User {
+  @@map("users")
+
   id  Int @id @default(autoincrement())
   username String @db.VarChar(255)
   discord_id String @db.VarChar(64) @unique
   entries SketchbookEntry[]
+
+  @@index(username)
 }
 
 model Sketchbook {
+  @@map("sketchbooks")
+
   id Int @id @default(autoincrement())
-  name String @db.VarChar(255)
+  name String @db.VarChar(255) @unique
   theme String?
   start DateTime @db.Timestamp(3)
   end DateTime @db.Timestamp(3)
+  pages Int
+  width Int
+  height Int
   entries SketchbookEntry[]
+
+  @@index(name)
 }
 
 enum EntryKind {
+  @@map("entry_kind")
+
   DigitalArt
   TraditionalArt
   Photo
@@ -35,13 +48,21 @@ enum EntryKind {
 }
 
 model SketchbookEntry {
+  @@map("sketchbook_entries")
+
   id Int @id @default(autoincrement())
-  userId Int 
-  user User @relation(fields: [userId], references: [id])
+  user_id Int 
+  user User @relation(fields: [user_id], references: [id])
   sketchbook_id Int
   sketchbook Sketchbook @relation(fields: [sketchbook_id], references: [id])
   kind EntryKind
-  path String
+  path String @unique
   name String? @db.VarChar(255)
   description String?
+  post_time DateTime @db.Timestamp(3)
+  edit_time DateTime @db.Timestamp(3)
+
+  @@index(user_id)
+  @@index(sketchbook_id)
+  @@index([user_id, sketchbook_id])
 }

@@ -21,6 +21,8 @@ const config = {
   ignorePatterns: ['node_modules/', '.next/', 'out/', 'build/', 'coverage/'],
   rules: {
     'comma-dangle': ['error', 'always-multiline'],
+    'no-multiple-empty-lines': ['off'],
+    'padded-blocks': ['off'],
     '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],
     '@typescript-eslint/no-empty-interface': ['error', { allowSingleExtends: true }],
     '@typescript-eslint/explicit-function-return-type': ['off'],
