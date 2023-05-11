@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client'
 import type { User, Sketchbook, EntryKind, SketchbookEntry } from '@prisma/client'
+import { stringLengthCheck, integerCheck, nonZeroNaturalCheck, startEndTimeCheck } from './validation'
 import Constants from '@/constants'
+import type { AtLeastOne } from '@/types'
 
 const prisma = new PrismaClient()
 
@@ -9,32 +11,12 @@ const prisma = new PrismaClient()
  */
 export const rawDb = prisma
 
-export const ValidationError = Error
+// Helper section
 
-type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U]
-
-function stringLengthCheck(x: string, maxLength: number, name: string) {
-  if (x.length > maxLength) {
-    throw new ValidationError(`${name} has more than ${maxLength} characters (${x.length}): "${x}"`)
-  }
-}
-
-function integerCheck(x: number, name: string) {
-  if (!Number.isInteger(x)) {
-    throw new ValidationError(`${name} was not an integer: ${x}`)
-  }
-}
-
-function nonZeroNaturalCheck(x: number, name: string) {
-  if (x < 1) {
-    throw new ValidationError(`${name} was less than 1: ${x}`)
-  }
-}
-
-function startEndTimeCheck(start: Date, end: Date) {
-  if (start.getTime() > end.getTime()) {
-    throw new ValidationError(`Start time is after it ends: Start is ${start.toUTCString()} but end is ${end.toUTCString()}`)
-  }
+interface FindManyOptions<T> {
+  skip?: number
+  take?: number
+  orderBy?: Record<keyof T, 'asc' | 'desc'>
 }
 
 function getId<T extends { id: number }>(x: T | number): number {
@@ -44,6 +26,12 @@ function getId<T extends { id: number }>(x: T | number): number {
   } else {
     return x.id
   }
+}
+
+// User
+
+interface UserUpdateable {
+  username?: string
 }
 
 export async function createUser(username: string, discordSnowflake: string) {
@@ -67,10 +55,6 @@ export async function findUser(user: Partial<User>, withEntries = false) {
       entries: withEntries,
     },
   })
-}
-
-interface UserUpdateable {
-  username?: string
 }
 
 export async function updateUser(user: User | number, { username }: AtLeastOne<UserUpdateable>) {
@@ -97,12 +81,24 @@ export async function deleteUser(user: User | number) {
   })
 }
 
-export async function findUsersBySimilarUsername(username: string) {
-  return await prisma.$queryRaw<User[]>`SELECT * FROM users WHERE SIMILARITY(username, ${`'${username}'`}) > 0.4`
-}
+// Sketchbook
 
 interface OptionalSketchbookParameters {
   theme?: string
+}
+
+interface SketchbookUpdateable {
+  name?: string
+  theme?: string | null
+  start?: Date
+  end?: Date
+  pages?: number
+  width?: number
+  height?: number
+}
+
+export async function findUsersBySimilarUsername(username: string) {
+  return await prisma.$queryRaw<User[]>`SELECT * FROM users WHERE SIMILARITY(username, ${`'${username}'`}) > 0.4`
 }
 
 export async function createSketchbook(name: string, start: Date, end: Date, pages: number, width: number, height: number, { theme }: OptionalSketchbookParameters) {
@@ -138,16 +134,6 @@ export async function findSketchbook(sketchbook: Partial<Sketchbook>, withEntrie
 
 export async function findSketchbookBySimilarName(name: string) {
   return await prisma.$queryRaw<User[]>`SELECT * FROM sketchbooks WHERE SIMILARITY(name, ${`'${name}'`}) > 0.4`
-}
-
-interface SketchbookUpdateable {
-  name?: string
-  theme?: string | null
-  start?: Date
-  end?: Date
-  pages?: number
-  width?: number
-  height?: number
 }
 
 export async function updateSketchbook(sketchbook: Sketchbook | number, { name, theme, start, end, pages, width, height }: AtLeastOne<SketchbookUpdateable>) {
@@ -198,9 +184,17 @@ export async function deleteSketchbook(sketchbook: Sketchbook | number) {
   })
 }
 
+// Sketchbook entries
+
 interface OptionalSketchbookEntryParameters {
   name?: string
   description?: string
+}
+
+interface SketchbookEntryUpdateable {
+  kind?: EntryKind
+  name?: string | null
+  description?: string | null
 }
 
 export async function createSketchbookEntry(author: User | number, sketchbook: Sketchbook | number, kind: EntryKind, path: string, { name, description }: OptionalSketchbookEntryParameters) {
@@ -234,12 +228,6 @@ export async function findEntry(entry: Partial<SketchbookEntry>, withOwners = fa
       user: withOwners, sketchbook: withOwners,
     },
   })
-}
-
-interface FindManyOptions<T> {
-  skip?: number
-  take?: number
-  orderBy?: Record<keyof T, 'asc' | 'desc'>
 }
 
 export async function findEntries(entry: Partial<SketchbookEntry>, options?: FindManyOptions<SketchbookEntry>, withOwners?: true): Promise<Array<SketchbookEntry & { user: User, sketchbook: Sketchbook }> | null>
@@ -302,12 +290,6 @@ export async function findSketchbookEntriesByAuthor(sketchbook: Sketchbook | num
     },
     ...options,
   })
-}
-
-interface SketchbookEntryUpdateable {
-  kind?: EntryKind
-  name?: string | null
-  description?: string | null
 }
 
 export async function updateSketchbookEntry(entry: SketchbookEntry | number, { kind, name, description }: AtLeastOne<SketchbookEntryUpdateable>) {
