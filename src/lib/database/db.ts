@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import type { User, Sketchbook, EntryKind } from '@prisma/client'
+import type { User, Sketchbook, EntryKind, SketchbookEntry } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -36,7 +36,26 @@ export async function createUser(username: string, discordSnowflake: string) {
   })
 }
 
-export async function createSketchbook(name: string, start: Date, end: Date, pages: number, width: number, height: number, theme?: string) {
+export async function findUser(user: Partial<User>, withEntries: true): Promise<User & { entries: SketchbookEntry[] } | null>
+export async function findUser(user: Partial<User>, withEntries: false): Promise<User | null>
+export async function findUser(user: Partial<User>, withEntries = false) {
+  return await prisma.user.findUnique({
+    where: user,
+    include: {
+      entries: withEntries,
+    },
+  })
+}
+
+export async function findUsersBySimilarUsername(username: string) {
+  return await prisma.$queryRaw<User[]>`SELECT * FROM users WHERE SIMILARITY(username, ${`'${username}'`}) > 0.4`
+}
+
+interface optionalSketchbookParameters {
+  theme?: string
+}
+
+export async function createSketchbook(name: string, start: Date, end: Date, pages: number, width: number, height: number, { theme }: optionalSketchbookParameters) {
   integerCheck(pages, 'pages')
   integerCheck(width, 'width')
   integerCheck(height, 'height')
@@ -56,7 +75,27 @@ export async function createSketchbook(name: string, start: Date, end: Date, pag
   })
 }
 
-export async function createSketchbookEntry(author: User | number, sketchbook: Sketchbook | number, kind: EntryKind, path: string, name?: string, description?: string) {
+export async function findSketchbook(sketchbook: Partial<Sketchbook>, withEntries: true): Promise<Sketchbook & { entries: SketchbookEntry[] } | null>
+export async function findSketchbook(sketchbook: Partial<Sketchbook>, withEntries: false): Promise<Sketchbook | null>
+export async function findSketchbook(sketchbook: Partial<Sketchbook>, withEntries = false) {
+  return await prisma.sketchbook.findUnique({
+    where: sketchbook,
+    include: {
+      entries: withEntries,
+    },
+  })
+}
+
+export async function findSketchbookBySimilarName(name: string) {
+  return await prisma.$queryRaw<User[]>`SELECT * FROM sketchbooks WHERE SIMILARITY(name, ${`'${name}'`}) > 0.4`
+}
+
+interface optionalSketchbookEntryParameters {
+  name?: string
+  description?: string
+}
+
+export async function createSketchbookEntry(author: User | number, sketchbook: Sketchbook | number, kind: EntryKind, path: string, { name, description }: optionalSketchbookEntryParameters) {
   const userId = typeof author === 'number' ? author : author.id
   const sketchbookId = typeof sketchbook === 'number' ? sketchbook : sketchbook.id
 
@@ -78,5 +117,88 @@ export async function createSketchbookEntry(author: User | number, sketchbook: S
       post_time: now,
       edit_time: now,
     },
+  })
+}
+
+export async function findEntry(entry: Partial<SketchbookEntry>, withOwners: true): Promise<SketchbookEntry & { user: User, sketchbook: Sketchbook } | null>
+export async function findEntry(entry: Partial<SketchbookEntry>, withOwners: false): Promise<SketchbookEntry | null>
+export async function findEntry(entry: Partial<SketchbookEntry>, withOwners = false) {
+  return await prisma.sketchbookEntry.findUnique({
+    where: entry,
+    include: {
+      user: withOwners, sketchbook: withOwners,
+    },
+  })
+}
+
+interface findManyOptions<T> {
+  skip?: number
+  take?: number
+  orderBy?: Record<keyof T, 'asc' | 'desc'>
+}
+
+export async function findEntries(entry: Partial<SketchbookEntry>, options: findManyOptions<SketchbookEntry>, withOwners: true): Promise<Array<SketchbookEntry & { user: User, sketchbook: Sketchbook }> | null>
+export async function findEntries(entry: Partial<SketchbookEntry>, options: findManyOptions<SketchbookEntry>, withOwners: false): Promise<SketchbookEntry[] | null>
+export async function findEntries(entry: Partial<SketchbookEntry>, options: findManyOptions<SketchbookEntry> = {}, withOwners = false) {
+  return await prisma.sketchbookEntry.findMany({
+    where: entry,
+    include: {
+      user: withOwners, sketchbook: withOwners,
+    },
+    ...options,
+  })
+}
+
+export async function findEntriesByAuthor(author: User | number, options: findManyOptions<SketchbookEntry>, withOwners: true): Promise<Array<SketchbookEntry & { user: User, sketchbook: Sketchbook }> | null>
+export async function findEntriesByAuthor(author: User | number, options: findManyOptions<SketchbookEntry>, withOwners: false): Promise<SketchbookEntry[] | null>
+export async function findEntriesByAuthor(author: User | number, options: findManyOptions<SketchbookEntry> = {}, withOwners = false) {
+  const userId = typeof author === 'number' ? author : author.id
+  integerCheck(userId, 'author id')
+
+  return await prisma.sketchbookEntry.findMany({
+    where: {
+      user_id: userId,
+    },
+    include: {
+      user: withOwners, sketchbook: withOwners,
+    },
+    ...options,
+  })
+}
+
+export async function findEntriesBySketchbook(sketchbook: Sketchbook | number, options: findManyOptions<SketchbookEntry>, withOwners: true): Promise<Array<SketchbookEntry & { user: User, sketchbook: Sketchbook }> | null>
+export async function findEntriesBySketchbook(sketchbook: Sketchbook | number, options: findManyOptions<SketchbookEntry>, withOwners: false): Promise<SketchbookEntry[] | null>
+export async function findEntriesBySketchbook(sketchbook: Sketchbook | number, options: findManyOptions<SketchbookEntry> = {}, withOwners = false) {
+  const sketchbookId = typeof sketchbook === 'number' ? sketchbook : sketchbook.id
+  integerCheck(sketchbookId, 'sketchbook id')
+
+  return await prisma.sketchbookEntry.findMany({
+    where: {
+      sketchbook_id: sketchbookId,
+    },
+    include: {
+      user: withOwners, sketchbook: withOwners,
+    },
+    ...options,
+  })
+}
+
+export async function findSketchbookEntriesByAuthor(sketchbook: Sketchbook | number, author: User | number, options: findManyOptions<SketchbookEntry>, withOwners: true): Promise<Array<SketchbookEntry & { user: User, sketchbook: Sketchbook }> | null>
+export async function findSketchbookEntriesByAuthor(sketchbook: Sketchbook | number, author: User | number, options: findManyOptions<SketchbookEntry>, withOwners: false): Promise<SketchbookEntry[] | null>
+export async function findSketchbookEntriesByAuthor(sketchbook: Sketchbook | number, author: User | number, options: findManyOptions<SketchbookEntry> = {}, withOwners = false) {
+  const userId = typeof author === 'number' ? author : author.id
+  const sketchbookId = typeof sketchbook === 'number' ? sketchbook : sketchbook.id
+  integerCheck(userId, 'author id')
+  integerCheck(sketchbookId, 'sketchbook id')
+
+  return await prisma.sketchbookEntry.findMany({
+    where: {
+      user_id: userId,
+      sketchbook_id: sketchbookId,
+    },
+    include: {
+      user: withOwners, sketchbook: withOwners,
+    },
+    ...options,
   })
 }
